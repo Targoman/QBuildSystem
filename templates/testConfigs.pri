@@ -7,7 +7,7 @@
 #   terms of BSD License 2.0.
 ################################################################################
 CONFIG_TYPE="Test"
-include (./configs.pri)
+include (../base/base.pri)
 
 !defined(TEST_NAME, var): TEST_NAME=tst_$$ProjectName
 
@@ -19,4 +19,4 @@ osx:CONFIG  -= app_bundle
 
 DESTDIR      = $$BaseTestBinFolder
 
-include(./common.pri)
+include(../base/common.pri)

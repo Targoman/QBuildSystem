@@ -7,7 +7,7 @@
 #   terms of BSD License 2.0.
 ################################################################################
 CONFIG_TYPE="App"
-include (./configs.pri)
+include (../base/base.pri)
 
 !defined(APP_NAME, var): APP_NAME=$$ProjectName
 
@@ -16,4 +16,4 @@ TARGET=$$APP_NAME
 
 DESTDIR      = $$BaseBinFolder
 
-include(./common.pri)
+include(../base/common.pri)

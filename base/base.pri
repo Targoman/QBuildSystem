@@ -111,6 +111,6 @@ message("* DISABLED_DEPS     : $$DISABLED_DPES")
 message("******************************************************************** ")
 
 !defined(CONFIG_TYPE, var) {
-    unix: system($$QBUILD_PATH/qmake/buildDeps.sh $$BASE_PROJECT_PATH $$BASE_PROJECT_PATH/out/.depsBuilt $$DONT_BUILD_DEPS $$DISABLED_DPES)
+    unix: system($$QBUILD_PATH/scripts/buildDeps.sh $$BASE_PROJECT_PATH $$BASE_PROJECT_PATH/out/.depsBuilt $$DONT_BUILD_DEPS $$DISABLED_DPES)
     win32: error(submodule auto-compile has not yet been implemented for windows)
 }

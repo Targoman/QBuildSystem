@@ -34,8 +34,6 @@ if ! which $QMAKE_CLI >/dev/null 2>&1; then
     fi
 fi
 
-echo "Using $QMAKE_CLI ..."
-
 if ! grep "Using Qt version 5." <<< $($QMAKE_CLI -v) >/dev/null 2>&1; then
     error "Qt version 5.x is needed for compiling this library."
     exit 1
@@ -49,6 +47,8 @@ for Disabled in ${@:4}; do
 done
 
 if [ -f .gitmodules ]; then
+  git submodule update --init --recursive
+
   Deps=$(grep "\[submodule " .gitmodules | cut -d ' ' -f 2 | tr -d '\"\]')
   for Dep in $Deps; do
     info "\n=====================> Building $Dep <========================"
@@ -85,6 +85,6 @@ if [ -f .gitmodules ]; then
       echo $Dep >> $DEPS_BUILT
     popd
   done
-fi 
+  happy "Dependency build finished\n"
+fi
 
-happy "Dependency build finished\n"

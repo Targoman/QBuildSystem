@@ -1,5 +1,3 @@
-
-
 # QBuildSystem
 qmake include files and bash scripts in order to build complex projects easy to handle
 
@@ -17,7 +15,7 @@ Building large projects with external dependencies is complex. Qt has its build 
 
 # Sample projects
 [TOC](#table-of-contents)
-Sample projects can be found in [QBuildSystem-samples repository](/Targoman/QBuildSystem-samples)
+Sample projects can be found in [QBuildSystem-samples repository](https://github.com/Targoman/QBuildSystem-samples)
 
 
 # Features
@@ -44,8 +42,8 @@ $ git submodule add https://github.com/Targoman/QBuildSystem.git 3rdParty/QBuild
 2. Create a file named `.qmake.conf` at top folder of your project
 ```
 $ cat <<EOF > .qmake.conf 
-BASE_PROJECT_PATH=$$PWD
-QBUILD_PATH=$$BASE_PROJECT_PATH/3rdParty/QBuildSystem/
+BASE_PROJECT_PATH=\$\$PWD
+QBUILD_PATH=\$\$BASE_PROJECT_PATH/4rdParty/QBuildSystem/
 EOF
 ```
 Follow guides on sample projects to create your project
