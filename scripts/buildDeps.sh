@@ -47,7 +47,7 @@ for Disabled in ${@:4}; do
 done
 
 if [ -f .gitmodules ]; then
-  git submodule update --init --recursive
+#  git submodule update --init --recursive
 
   Deps=$(grep "\[submodule " .gitmodules | cut -d ' ' -f 2 | tr -d '\"\]')
   for Dep in $Deps; do
