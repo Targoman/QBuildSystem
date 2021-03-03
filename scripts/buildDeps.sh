@@ -18,9 +18,15 @@ if [ "$DONT_BUILD_DEPS" -eq 1 ]; then
     exit 0;
 fi
 
-DEPS_BUILT=$(realpath $(dirname $DEPS_BUILT_FILE))/$(basename $DEPS_BUILT_FILE)
 cd $(realpath $PROJECT_BASE_DIR)
 PROJECT_BASE_DIR=$(pwd)
+
+if [ -f "$DEPS_BUILT_FILE" ]; then 
+    if [ -f .gitmodules ]; then
+        ignore "Submodules were built previously"
+    fi
+    exit 0
+fi
 
 CPU_COUNT=$(cat /proc/cpuinfo | grep processor | wc -l)
 CPU_COUNT=$((CPU_COUNT-1))
@@ -60,10 +66,10 @@ function lastCommitDate(){
 }
 
 function buildModule() {
-    LevelTab=$2
+    local LevelTab=$2
     buildSubmodules $1 $2"\t"
     pushd $1 > /dev/null 2>&1
-    happy $LevelTab"Entering $1"
+    info $LevelTab"Entering $1"
         if [ -r *".pro" ]; then
             make distclean
             $QMAKE_CLI PREFIX=$PROJECT_BASE_DIR/out \
@@ -92,41 +98,64 @@ function buildModule() {
             warn $LevelTab"Type could not be determined so will not be compiled"
         fi
     popd > /dev/null 2>&1
-    happy $LevelTab"Leaved $1"
+    info $LevelTab"Leaved $1"
 }
 
 function buildSubmodules() {
-    LevelTab=$2
+    local LevelTab=$2
     pushd $1 >/dev/null 2>&1
-    happy $LevelTab"Entered $1"
+    info $LevelTab"Entered $1"
         if [ -f .gitmodules ]; then
             info "$LevelTab=====================> Submodules of $1 <========================"
-            SubModulePaths=($(git config --file .gitmodules  --get-regexp path | awk '{ print $2 }'))
-            SubModuleURLs=($(git config --file .gitmodules  --get-regexp url | awk '{ print $2 }'))
+            local SubModulePaths=($(git config --file .gitmodules  --get-regexp path | awk '{ print $2 }'))
+            local SubModuleURLs=($(git config --file .gitmodules  --get-regexp url | awk '{ print $2 }'))
             
             for ((i=0;i<${#SubModuleURLs[@]}; ++i)); do
                 Module=$(basename ${SubModuleURLs[i]})
                 Module=${Module%".git"}
                 ModulePath=${SubModulePaths[i]}
-#                info "$Module -> $ModulePath"
+                if [ "QBuildSystem" = "$Module" ]; then  ignore $LevelTab"QBuildSystem module ignored"; continue; fi
+                if [[ " ${@:4} " =~ " $Module " ]]; then ignore $LevelTab"Submodule $Module building ignored as specified"; continue; fi
+                
+                local IgnoreBuild=0
                 if [[ " ${AllSubModules[@]} " =~ " ${Module} " ]]; then
-                    ignore $LevelTab"${Module} was build"
-                else
-                    if [ "QBuildSystem" = "$Module" ]; then  ignore $LevelTab"QBuildSystem module ignored"; continue; fi
-                    if [[ " ${@:4} " =~ " $Module " ]]; then ignore $LevelTab"Submodule $Module building ignored as specified"; continue; fi
-                    
-                    info $LevelTab"Building $Module on $1/$ModulePath"
-                    buildModule $ModulePath $LevelTab
-                    AllSubModules+=($Module)
-                    AllSubModulesCommitDate+=($(lastCommitDate $ModulePath))
+                    commitDate=$(lastCommitDate $ModulePath)
+                    if [ $commitDate -eq ${AllSubModulesCommitDate[$Module]} ]; then
+                        ignore $LevelTab"same version ${Module} was built before"
+                        continue
+                    else 
+                        if [ $commitDate -gt ${AllSubModulesCommitDate[$Module]} ];then
+                            warn "Another submodule is dependent to older '${Module}'. What to do?"
+                        else
+                            warn "Another submodule is dependent to newer '${Module}'. What to do?"
+                        fi
+                        while [ 1 ];do 
+                            warn "(I)gnore and use installed. (R)ebuild and overwrite. (B)reak and exit make process"
+                            
+                            case `read -n1 ans` in
+                                'B' | 'b') exit 1 ;;
+                                'I' | 'i') IgnoreBuild=1; break  ;;
+                                'R' | 'r') break;;
+                            esac
+                        done
+                    fi
                 fi    
+                
+                if [ $IgnoreBuild -eq 0 ]; then
+                    info $LevelTab"\n$LevelTab------------------------\n"$LevelTab"Building $Module on $1/$ModulePath"
+                    buildModule $ModulePath $LevelTab
+                    
+                    AllSubModules+=($Module)
+                    AllSubModulesCommitDate[$Module]=$(lastCommitDate $ModulePath)
+                fi
             done
             
         fi
     popd  >/dev/null 2>&1
-    happy $LevelTab"Leaved $1"
+    info $LevelTab"Leaved $1"
 }
 
 
 buildSubmodules . 
+date > $DEPS_BUILT_FILE
 
