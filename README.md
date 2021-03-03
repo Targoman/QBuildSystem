@@ -43,7 +43,7 @@ $ git submodule add https://github.com/Targoman/QBuildSystem.git 3rdParty/QBuild
 ```
 $ cat <<EOF > .qmake.conf 
 BASE_PROJECT_PATH=\$\$PWD
-QBUILD_PATH=\$\$BASE_PROJECT_PATH/4rdParty/QBuildSystem/
+QBUILD_PATH=\$\$BASE_PROJECT_PATH/3rdParty/QBuildSystem/
 EOF
 ```
 Follow guides on sample projects to create your project
