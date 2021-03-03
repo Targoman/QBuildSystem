@@ -7,6 +7,7 @@
 #   terms of BSD License 2.0.
 ################################################################################
 !defined(BASE_PROJECT_PATH, var): error(BASE_PROJECT_PATH not set in .qmake.conf)
+!defined(BASE_OUT_PATH, var): BASE_OUT_PATH=$$BASE_PROJECT_PATH/out
 !defined(VERSION, var){
     VersionFile=$$BASE_PROJECT_PATH/version.pri
     !exists($$VersionFile): error("**** Unable to find version info file $$VersionFile ****")
@@ -43,15 +44,15 @@ UnitTestBinFolder       = unitTest
 ConfigFolderPattern     = conf
 
 
-BaseLibraryFolder        = $$BASE_PROJECT_PATH/out/$$LibFolderPattern
-BaseModulesFolder        = $$BASE_PROJECT_PATH/out/$$ModulesFolderPattern
-BasePluginsFolder        = $$BASE_PROJECT_PATH/out/$$PluginsFolderPattern
-BaseLibraryIncludeFolder = $$BASE_PROJECT_PATH/out/$$LibIncludeFolderPattern
-BaseBinFolder            = $$BASE_PROJECT_PATH/out/$$BinFolderPattern
-BaseTestBinFolder        = $$BASE_PROJECT_PATH/out/$$TestBinFolder
-BaseUnitTestBinFolder    = $$BASE_PROJECT_PATH/out/$$UnitTestBinFolder
-BaseBuildFolder          = $$BASE_PROJECT_PATH/out/$$BuildFolderPattern/$$ProjectName
-BaseConfigFolder         = $$BASE_PROJECT_PATH/out/$$ConfigFolderPattern
+BaseLibraryFolder        = $$BASE_OUT_PATH/$$LibFolderPattern
+BaseModulesFolder        = $$BASE_OUT_PATH/$$ModulesFolderPattern
+BasePluginsFolder        = $$BASE_OUT_PATH/$$PluginsFolderPattern
+BaseLibraryIncludeFolder = $$BASE_OUT_PATH/$$LibIncludeFolderPattern
+BaseBinFolder            = $$BASE_OUT_PATH/$$BinFolderPattern
+BaseTestBinFolder        = $$BASE_OUT_PATH/$$TestBinFolder
+BaseUnitTestBinFolder    = $$BASE_OUT_PATH/$$UnitTestBinFolder
+BaseBuildFolder          = $$BASE_OUT_PATH/$$BuildFolderPattern/$$ProjectName
+BaseConfigFolder         = $$BASE_OUT_PATH/$$ConfigFolderPattern
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-
 INCLUDEPATH += $$BASE_PROJECT_PATH \
@@ -64,8 +65,8 @@ INCLUDEPATH += $$BASE_PROJECT_PATH \
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-
 DependencyLibPaths      +=   $$BaseLibraryFolder \
-                             $$BASE_PROJECT_PATH/out/lib64 \
-                             $$BASE_PROJECT_PATH/out/lib \
+                             $$BASE_OUT_PATH/lib64 \
+                             $$BASE_OUT_PATH/lib \
                              $$PREFIX/lib64 \
                              $$PREFIX/lib \
                              $(HOME)/local/lib \
@@ -104,6 +105,7 @@ defineTest(addSubdirs) {
 message("*******************   $$ProjectName BASE CONFIG  ************************ ")
 message("* Building $$ProjectName Ver. $$VERSION")
 message("* Base Project Path : $$BASE_PROJECT_PATH")
+message("* Base Out Path     : $$BASE_OUT_PATH")
 message("* Install Path      : $$PREFIX/")
 message("* Definitions       : $$DEFINES")
 message("* DONT_BUILD_DEPS   : $$DONT_BUILD_DEPS")
@@ -111,6 +113,6 @@ message("* DISABLED_DEPS     : $$DISABLED_DPES")
 message("******************************************************************** ")
 
 !defined(CONFIG_TYPE, var) {
-    unix: system($$QBUILD_PATH/scripts/buildDeps.sh $$BASE_PROJECT_PATH $$BASE_PROJECT_PATH/out/.depsBuilt $$DONT_BUILD_DEPS $$DISABLED_DPES)
+    unix: system($$QBUILD_PATH/scripts/buildDeps.sh $$BASE_PROJECT_PATH $$BASE_OUT_PATH/.depsBuilt $$DONT_BUILD_DEPS $$DISABLED_DPES)
     win32: error(submodule auto-compile has not yet been implemented for windows)
 }

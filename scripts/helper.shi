@@ -32,4 +32,4 @@ ignore(){ echo -e "$LCYAN$1$NORMAL"; }
 info(){ echo -e "$BLUE$1$NORMAL"; }
 error(){ echo -e "$RED$1$NORMAL" 1>&2; }
 
-
+tabLevel() { if [ "$1" -gt 0 ]; then printf '\t%.0s' {1..$1}; fi }
