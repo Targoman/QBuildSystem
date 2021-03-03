@@ -50,11 +50,11 @@ mkdir -p $SubModulesBuildPath
 
 BaseQBuildSystemPath=`realpath $(dirname $0)/..`
 
+DisabledModules=${@:4}
 DisabledDeps=''
-for Disabled in ${@:4}; do
+for Disabled in $DisabledModules; do
     DisabledDeps="$DisabledDeps $Disabled=0"
 done
-
 
 AllSubModules=()
 AllSubModulesCommitDate=()
@@ -115,7 +115,7 @@ function buildSubmodules() {
                 Module=${Module%".git"}
                 ModulePath=${SubModulePaths[i]}
                 if [ "QBuildSystem" = "$Module" ]; then  ignore $LevelTab"QBuildSystem module ignored"; continue; fi
-                if [[ " ${@:4} " =~ " $Module " ]]; then ignore $LevelTab"Submodule $Module building ignored as specified"; continue; fi
+                if [[ " $DisabledModules " =~ " $Module " ]]; then ignore $LevelTab"Submodule $Module building ignored as specified"; continue; fi
                 
                 local IgnoreBuild=0
                 if [[ " ${AllSubModules[@]} " =~ " ${Module} " ]]; then
