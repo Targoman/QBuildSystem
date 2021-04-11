@@ -73,7 +73,7 @@ function buildModule() {
         if [ -r *".pro" ]; then
             make distclean
             $QMAKE_CLI PREFIX=$PROJECT_BASE_DIR/out \
-                       DONT_BUILD_DEPS=1 \
+                       DONT_BUILD_DEPS=0 \
                        BASE_OUT_PATH="$SubModulesBuildPath" \
                        QBUILD_PATH="$BaseQBuildSystemPath" \
                        $DisabledDeps
