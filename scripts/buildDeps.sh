@@ -57,7 +57,7 @@ for Disabled in $DisabledModules; do
 done
 
 AllSubModules=()
-AllSubModulesCommitDate=()
+declare -A AllSubModulesCommitDate=()
 
 function lastCommitDate(){
     pushd $1 > /dev/null 2>&1
@@ -70,6 +70,7 @@ function buildModule() {
     buildSubmodules $1 $2"\t"
     pushd $1 > /dev/null 2>&1
     info $LevelTab"Entering $1"
+        if [ 1 = 0 ]; then
         if [ -r *".pro" ]; then
             make distclean
             $QMAKE_CLI PREFIX=$PROJECT_BASE_DIR/out \
@@ -97,6 +98,7 @@ function buildModule() {
         else
             warn $LevelTab"Type could not be determined so will not be compiled"
         fi
+fi
     popd > /dev/null 2>&1
     info $LevelTab"Leaved $1"
 }
@@ -108,8 +110,8 @@ function buildSubmodules() {
         if [ -f .gitmodules ]; then
             info "$LevelTab=====================> Submodules of $1 <========================"
             local SubModulePaths=($(git config --file .gitmodules  --get-regexp path | awk '{ print $2 }'))
-            local SubModuleURLs=($(git config --file .gitmodules  --get-regexp url | awk '{ print $2 }'))
-            
+            local SubModuleURLs=($(git config --file .gitmodules  --get-regexp url | grep '\.url ' | awk '{ print $2 }'))
+            local i
             for ((i=0;i<${#SubModuleURLs[@]}; ++i)); do
                 Module=$(basename ${SubModuleURLs[i]})
                 Module=${Module%".git"}
@@ -117,25 +119,28 @@ function buildSubmodules() {
                 if [ "QBuildSystem" = "$Module" ]; then  ignore $LevelTab"QBuildSystem module ignored"; continue; fi
                 if [[ " $DisabledModules " =~ " $Module " ]]; then ignore $LevelTab"Submodule $Module building ignored as specified"; continue; fi
                 
+                
                 local IgnoreBuild=0
                 if [[ " ${AllSubModules[@]} " =~ " ${Module} " ]]; then
                     commitDate=$(lastCommitDate $ModulePath)
                     if [ $commitDate -eq ${AllSubModulesCommitDate[$Module]} ]; then
-                        ignore $LevelTab"same version ${Module} was built before"
+                        ignore $LevelTab"Same version ${Module} was built before"
                         continue
                     else 
+                        echo $commitDate $AllSubModulesCommitDate 
                         if [ $commitDate -gt ${AllSubModulesCommitDate[$Module]} ];then
                             warn "Another submodule is dependent to older '${Module}'. What to do?"
                         else
                             warn "Another submodule is dependent to newer '${Module}'. What to do?"
                         fi
-                        while [ 1 ];do 
-                            warn "(I)gnore and use installed. (R)ebuild and overwrite. (B)reak and exit make process"
-                            
-                            case `read -n1 ans` in
+                        local ContinueToGetInput=1
+                        while [ $ContinueToGetInput -eq 1 ];do 
+                            warn "$GREEN(I)${YELLOW}gnore and use installed. $GREEN(R)${YELLOW}ebuild and overwrite. $GREEN(B)${YELLOW}reak and exit make process"
+                            read -p "" -n1
+                            case ${REPLY} in
                                 'B' | 'b') exit 1 ;;
-                                'I' | 'i') IgnoreBuild=1; break  ;;
-                                'R' | 'r') break;;
+                                'I' | 'i') ContinueToGetInput=0; IgnoreBuild=1; break  ;;
+                                'R' | 'r') ContinueToGetInput=0; break;;
                             esac
                         done
                     fi
