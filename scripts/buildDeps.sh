@@ -70,35 +70,35 @@ function buildModule() {
     buildSubmodules $1 $2"\t"
     pushd $1 > /dev/null 2>&1
     info $LevelTab"Entering $1"
-        if [ 1 = 0 ]; then
-        if [ -r *".pro" ]; then
-            make distclean
-            $QMAKE_CLI PREFIX=$PROJECT_BASE_DIR/out \
-                       DONT_BUILD_DEPS=0 \
-                       BASE_OUT_PATH="$SubModulesBuildPath" \
-                       QBUILD_PATH="$BaseQBuildSystemPath" \
-                       $DisabledDeps
-            make install -j $CPU_COUNT
-            if [ $? -ne 0 ]; then 
-                error $LevelTab"Error building as Qt project"; 
-                exit 1; 
-            fi
-        elif [ -f "CMakeLists.txt" ];then
-            PrjPath=$(pwd)
-            buildPath=$SubModulesBuildPath/$(basename $1)/cmake
-            mkdir -p $buildPath
-            pushd $buildPath >/dev/null 2>&1
-                cmake -DCMAKE_INSTALL_PREFIX:PATH=$PROJECT_BASE_DIR/out $PrjPath
+        if [ 1 = 1 ]; then
+            if [ -r *".pro" ]; then
+                make distclean
+                $QMAKE_CLI PREFIX=$PROJECT_BASE_DIR/out \
+                        DONT_BUILD_DEPS=0 \
+                        BASE_OUT_PATH="$SubModulesBuildPath" \
+                        QBUILD_PATH="$BaseQBuildSystemPath" \
+                        $DisabledDeps
                 make install -j $CPU_COUNT
-                if [ $? -ne 0 ]; then
-                    error $LevelTab"Error building as a CMake project"
-                    exit 1
+                if [ $? -ne 0 ]; then 
+                    error $LevelTab"Error building as Qt project"; 
+                    exit 1; 
                 fi
-            popd >/dev/null 2>&1
-        else
-            warn $LevelTab"Type could not be determined so will not be compiled"
+            elif [ -f "CMakeLists.txt" ];then
+                PrjPath=$(pwd)
+                buildPath=$SubModulesBuildPath/$(basename $1)/cmake
+                mkdir -p $buildPath
+                pushd $buildPath >/dev/null 2>&1
+                    cmake -DCMAKE_INSTALL_PREFIX:PATH=$PROJECT_BASE_DIR/out $PrjPath
+                    make install -j $CPU_COUNT
+                    if [ $? -ne 0 ]; then
+                        error $LevelTab"Error building as a CMake project"
+                        exit 1
+                    fi
+                popd >/dev/null 2>&1
+            else
+                warn $LevelTab"Type could not be determined so will not be compiled"
+            fi
         fi
-fi
     popd > /dev/null 2>&1
     info $LevelTab"Leaved $1"
 }
