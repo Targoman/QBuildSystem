@@ -9,9 +9,12 @@
 ################################################################################
 source `dirname ${BASH_SOURCE[0]}`/helper.shi
 
+
 PROJECT_BASE_DIR=$1
 DEPS_BUILT_FILE=$2
-DONT_BUILD_DEPS=$3
+BUILD_MODE=$3 
+DONT_BUILD_DEPS=$4
+
 
 if [ "$DONT_BUILD_DEPS" -eq 1 ]; then
     warn "Dependency build has been disabled"
@@ -73,7 +76,9 @@ function buildModule() {
         if [ 1 = 1 ]; then
             if [ -r *".pro" ]; then
                 make distclean
+
                 $QMAKE_CLI PREFIX=$PROJECT_BASE_DIR/out \
+			CONFIG+=$BUILD_MODE \
                         DONT_BUILD_DEPS=0 \
                         BASE_OUT_PATH="$SubModulesBuildPath" \
                         QBUILD_PATH="$BaseQBuildSystemPath" \

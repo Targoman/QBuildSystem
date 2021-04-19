@@ -26,7 +26,8 @@ HEADERS += $$DIST_HEADERS \
            $$PRIVATE_HEADERS \
            $$SUBMODULE_HEADERS \
 
-DESTDIR  = $$BaseFolder
+equals(CONFIG_TYPE, module): DESTDIR  = $$BaseModulesFolder
+equals(CONFIG_TYPE, plugin): DESTDIR  = $$BasePluginsFolder
 
 include(./common.pri)
 

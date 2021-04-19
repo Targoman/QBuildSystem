@@ -20,10 +20,14 @@
 !defined(DONT_BUILD_DEPS, var): DONT_BUILD_DEPS=0
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-
-CONFIG(debug, debug|release): DEFINES += TARGOMAN_SHOW_DEBUG=1
 CONFIG(release){
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE += -O3
+    BUILD_MODE=release
+}
+CONFIG(debug, debug|release){
+   DEFINES += TARGOMAN_SHOW_DEBUG=1
+   BUILD_MODE=debug
 }
 
 DEFINES += PROJ_VERSION=$$VERSION
@@ -110,9 +114,10 @@ message("* Install Path      : $$PREFIX/")
 message("* Definitions       : $$DEFINES")
 message("* DONT_BUILD_DEPS   : $$DONT_BUILD_DEPS")
 message("* DISABLED_DEPS     : $$DISABLED_DPES")
+message("* BuildMode         : $$BUILD_MODE")
 message("******************************************************************** ")
 
 !defined(CONFIG_TYPE, var) {
-    unix: system($$QBUILD_PATH/scripts/buildDeps.sh $$BASE_PROJECT_PATH $$BASE_OUT_PATH/.depsBuilt $$DONT_BUILD_DEPS $$DISABLED_DPES)
+    unix: system($$QBUILD_PATH/scripts/buildDeps.sh $$BASE_PROJECT_PATH $$BASE_OUT_PATH/.depsBuilt $$BUILD_MODE $$DONT_BUILD_DEPS $$DISABLED_DPES)
     win32: error(submodule auto-compile has not yet been implemented for windows)
 }
