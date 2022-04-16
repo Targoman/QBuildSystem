@@ -105,7 +105,7 @@ function buildModule() {
             fi
         fi
     popd > /dev/null 2>&1
-    info $LevelTab"Leaved $1"
+    info $LevelTab"Left $1"
 }
 
 function buildSubmodules() {

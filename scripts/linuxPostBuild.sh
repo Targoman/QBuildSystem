@@ -13,8 +13,13 @@ BasePath=$1
 IncludeTarget=$2
 ConfigTarget=$3
 
+PYTHON=python
+if which python3 >/dev/null 2>&1; then
+    PYTHON=python3
+fi
+
 # Creating a symbolic link reduces the pain of ambigious changes in headers!
-#cp -vrf --parents `find $BasePath -name *.h -o -name *.hpp -o -name *.hh` $IncludeTarget || :
+# cp -vrf --parents `find $BasePath -name *.h -o -name *.hpp -o -name *.hh` $IncludeTarget || :
 for File in $(find "$BasePath/" -name "*.h" -o -name "*.hpp" -o -name "*.hh"); do
     SrcPath=$(dirname $File);
     SrcName=$(basename $File);
@@ -22,7 +27,7 @@ for File in $(find "$BasePath/" -name "*.h" -o -name "*.hpp" -o -name "*.hh"); d
     if echo "$SrcPath" | egrep "\b[P|p]rivate\b" 2>&1 > /dev/null; then
         ignore "Ignoring private header $File ..."
     else
-        TgtPath="$IncludeTarget/$BasePath/$(python -c "import os.path; print(os.path.relpath('$SrcPath', '$BasePath'))")";
+        TgtPath="$IncludeTarget/$BasePath/$($PYTHON -c "import os.path; print(os.path.relpath('$SrcPath', '$BasePath'))")";
         SrcPath="$(python -c "import os.path; print(os.path.relpath('$SrcPath', '$TgtPath'))")";
         if [ -r "$TgtPath/$SrcName" ]; then
             ignore "Already exists $File ...";
