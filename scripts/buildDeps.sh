@@ -70,7 +70,9 @@ function lastCommitDate(){
 
 function buildModule() {
     local LevelTab=$2
-    buildSubmodules $1 $2"\t"
+    if [ ! -f "CMakeLists.txt" ]; then
+        buildSubmodules $1 $2"\t"
+    fi
     pushd $1 > /dev/null 2>&1
     info $LevelTab"Entering $1"
         if [ 1 = 1 ]; then
