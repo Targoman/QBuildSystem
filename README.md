@@ -15,7 +15,7 @@ Building large projects with external dependencies is complex. Qt has its build 
 
 # Sample projects
 [TOC](#table-of-contents)
-Sample projects can be found in [QBuildSystem-samples repository](https://github.com/Targoman/QBuildSystem-samples)
+Sample projects can be found in [QBuildSystem-sampleLibrary](https://github.com/Targoman/QBuildSystem-sampleLibrary) and [QBuildSystem-sampleApp](https://github.com/Targoman/QBuildSystem-sampleApp) repositories.
 
 
 # Features
